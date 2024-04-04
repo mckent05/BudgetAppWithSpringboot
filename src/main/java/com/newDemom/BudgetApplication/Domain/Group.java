@@ -1,12 +1,14 @@
 package com.newDemom.BudgetApplication.Domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
+
 @Getter
 @Setter
 @Entity
@@ -20,18 +22,18 @@ public class Group {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @NotEmpty
+    @Size(min = 2)
     private String name;
 
+    @NotEmpty
     private String icon;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinTable(name = "group_transaction", joinColumns = @JoinColumn(
-            name = "group_id", referencedColumnName = "id"
-    ), inverseJoinColumns = @JoinColumn(name = "transaction_id", referencedColumnName = "id"))
+    @ManyToMany(mappedBy = "groups", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Transaction> transactions = new HashSet<>();
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
 

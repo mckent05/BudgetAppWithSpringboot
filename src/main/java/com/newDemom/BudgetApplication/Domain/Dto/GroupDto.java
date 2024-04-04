@@ -15,12 +15,11 @@ import java.util.Set;
 @Builder
 @Data
 public class GroupDto {
-    @NotEmpty
-    @Size(min = 2)
+
+    private Long id;
     private String name;
 
-    @NotEmpty
     private String icon;
 
-    private Set<Transaction> transactions = new HashSet<>();
+    private Set<TransactionDto> transactions;
 }

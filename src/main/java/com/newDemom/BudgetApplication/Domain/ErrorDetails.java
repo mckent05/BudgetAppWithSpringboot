@@ -1,4 +1,4 @@
-package com.newDemom.BudgetApplication.Exception;
+package com.newDemom.BudgetApplication.Domain;
 
 import java.util.Date;
 
@@ -14,5 +14,17 @@ public class ErrorDetails {
         this.timeStamp = timeStamp;
         this.errorMessage = errorMessage;
         this.details = details;
+    }
+
+    public Date getTimeStamp() {
+        return timeStamp;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public String getDetails() {
+        return details;
     }
 }

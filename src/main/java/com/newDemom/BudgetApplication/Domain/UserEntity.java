@@ -56,6 +56,14 @@ public class UserEntity {
         this.email = email;
     }
 
+    public Set<Group> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(Set<Group> groups) {
+        this.groups = groups;
+    }
+
     public String getPassword() {
         return password;
     }

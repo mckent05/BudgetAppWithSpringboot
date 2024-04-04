@@ -13,7 +13,6 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "tokens")
 public class Token {
 
     @Id

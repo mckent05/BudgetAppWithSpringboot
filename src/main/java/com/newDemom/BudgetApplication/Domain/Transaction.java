@@ -1,12 +1,15 @@
 package com.newDemom.BudgetApplication.Domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
+
 @Getter
 @Setter
 @Entity
@@ -20,15 +23,21 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @NotEmpty
+    @Size(min = 2)
     private String name;
 
+    @Min(value = 1)
     private long amount;
 
-    @ManyToMany(mappedBy = "transactions", cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "group_transaction", joinColumns = @JoinColumn(
+            name = "group_id", referencedColumnName = "id"
+    ), inverseJoinColumns = @JoinColumn(name = "transaction_id", referencedColumnName = "id"))
     private Set<Group> groups = new HashSet<>();
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
 
