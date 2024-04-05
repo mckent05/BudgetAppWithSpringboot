@@ -61,4 +61,31 @@ public class TransactionController {
         );
     }
 
+    @PutMapping("/transactions/{trans-id}")
+    public ResponseEntity<TransactionDto> updateTransaction(
+            @PathVariable("id") long groupId,
+            @PathVariable("trans-id") long transId,
+            @RequestBody TransactionDto transactionDto,
+            Authentication authentication
+    ) {
+        UserEntity currentUser = userService.findByEmail(authentication.getName());
+        Transaction transaction = transactionMapper.MapFrom(transactionDto);
+        Transaction updatedTransaction = transactionService.updateTransaction
+                (groupId, transId, transaction, currentUser);
+        return new ResponseEntity<>(transactionMapper.MapTo(updatedTransaction), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/transactions/{trans-id}")
+    public ResponseEntity<String> deleteTransaction(
+            @PathVariable("id") long groupId,
+            @PathVariable("trans-id") long transId,
+            Authentication authentication
+    ) {
+        UserEntity currentUser = userService.findByEmail(authentication.getName());
+        transactionService.deleteTransaction(groupId, transId, currentUser);
+        return new ResponseEntity<>("Transaction deleted Successfully!!", HttpStatus.OK);
+    }
+
+
+
 }

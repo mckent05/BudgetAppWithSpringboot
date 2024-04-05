@@ -10,4 +10,7 @@ public interface TransactionService {
     public List<Transaction> getGroupTransactions(long groupId, UserEntity currentUser);
 
     public Transaction createTransaction(long groupId, Transaction transaction, UserEntity currentUser);
+
+    Transaction updateTransaction(long groupId, long transId, Transaction transaction, UserEntity currentUser);
+    void deleteTransaction(long groupId, long transId, UserEntity currentUser);
 }

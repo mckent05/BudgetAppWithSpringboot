@@ -29,7 +29,7 @@ public class Group {
     @NotEmpty
     private String icon;
 
-    @ManyToMany(mappedBy = "groups", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "groups", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.REMOVE}, fetch = FetchType.EAGER)
     private Set<Transaction> transactions = new HashSet<>();
 
     @ManyToOne

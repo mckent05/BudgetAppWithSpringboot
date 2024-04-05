@@ -51,6 +51,23 @@ public class TransactionServiceImpl implements TransactionService {
 
     }
 
+    @Override
+    public Transaction updateTransaction(long groupId,
+                                         long transId,
+                                         Transaction transaction, UserEntity currentUser) {
+        Transaction fetchTransaction  = findTransaction(transId, groupId,currentUser);
+        fetchTransaction.setAmount(transaction.getAmount());
+        fetchTransaction.setName(transaction.getName());
+        transactionRepository.save(fetchTransaction);
+        return fetchTransaction;
+    }
+
+    @Override
+    public void deleteTransaction(long groupId, long transId, UserEntity currentUser) {
+        Transaction fetchTransaction  = findTransaction(transId, groupId,currentUser);
+        transactionRepository.delete(fetchTransaction);
+    }
+
     private Group findGroup(long groupId, UserEntity currentUser) {
         Group getGroup = groupRepository.findById(groupId).orElseThrow(() ->
                 new ResourceNotFoundException(groupId, "id", "Group"));
@@ -59,5 +76,22 @@ public class TransactionServiceImpl implements TransactionService {
                     HttpStatus.BAD_REQUEST);
         }
         return getGroup;
+    }
+
+    private Transaction findTransaction(long transId, long groupId, UserEntity currentUser) {
+        Group findGroup = findGroup(groupId, currentUser);
+        Set<Transaction> groupTransactions = findGroup.getTransactions();
+        Transaction getTrans = transactionRepository.findById(transId).orElseThrow(() ->
+                new ResourceNotFoundException(transId, "id", "Transaction"));
+        if (getTrans.getUser().getId() != currentUser.getId()) {
+            throw new BlogAPIException(String.format("No transaction with id %s for this user", transId),
+                    HttpStatus.BAD_REQUEST);
+        }
+        if(!groupTransactions.contains(getTrans)) {
+            throw new BlogAPIException(String.
+                    format("Transaction with id: %s does not belong to group with id: %s", transId, groupId),
+                    HttpStatus.BAD_REQUEST);
+        }
+        return getTrans;
     }
 }
