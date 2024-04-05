@@ -58,11 +58,7 @@ public class AuthServiceImpl implements AuthService {
                 new BlogAPIException("Invalid username or Email", HttpStatus.BAD_REQUEST));
         revokeAlluserTokens(user);
         tokenService.createToken(token, user);
-
-//        System.out.println(loginDto.getUserNameOrEmail());
-//        System.out.println(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         return token;
-
     }
 
     @Override
@@ -79,16 +75,12 @@ public class AuthServiceImpl implements AuthService {
         user.setUserName(registerDto.getUserName());
         user.setEmail(registerDto.getEmail());
         user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
-
-//        Set<RoleEntity> roles = new HashSet<>();
-//        user.setRoles(roles);
         userRepository.save(user);
         return "User successfully signed up";
 
     }
 
     private void revokeAlluserTokens(UserEntity user) {
-
         List<Token> allUserTokens = tokenService.getAllUserTokens(user.getId());
         if(allUserTokens.isEmpty()){
             return;
@@ -98,6 +90,5 @@ public class AuthServiceImpl implements AuthService {
             token.setExpired(true);
         });
         tokenService.saveAllTokens(allUserTokens);
-
     }
 }

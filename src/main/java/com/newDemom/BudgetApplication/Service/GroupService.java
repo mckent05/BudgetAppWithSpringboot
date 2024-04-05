@@ -10,4 +10,8 @@ public interface GroupService {
     public List<Group> getAllGroups(UserEntity currentUser);
 
     public Group createGroup(Group group, UserEntity user);
+
+    Group updateGroupDetails(Long id, Group group, UserEntity currentUser);
+
+    void deleteGroup(long id, UserEntity currentUser);
 }

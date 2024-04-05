@@ -10,13 +10,12 @@ import com.newDemom.BudgetApplication.Service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,6 +32,7 @@ public class GroupController {
 
     private UserService userService;
 
+
     public GroupController(GroupMapper groupMapper, GroupService groupService,
                            UserService userService) {
         this.groupMapper = groupMapper;
@@ -42,10 +42,8 @@ public class GroupController {
 
 
     @GetMapping
-    public ResponseEntity<List<GroupDto>> getAllGroups() {
-        var currentUserEmail = SecurityContextHolder.
-                getContext().getAuthentication().getName();
-        UserEntity currentUser = userService.findByEmail(currentUserEmail);
+    public ResponseEntity<List<GroupDto>> getAllGroups(Authentication authentication) {
+        UserEntity currentUser = userService.findByEmail(authentication.getName());
         List<Group> groups = groupService.getAllGroups(currentUser);
         var allGroups = groups.stream().map(groupMapper::MapTo).
                 collect(Collectors.toList());
@@ -53,13 +51,35 @@ public class GroupController {
     }
 
     @PostMapping
-    public ResponseEntity<GroupDto> createNewGroup(@Valid @RequestBody GroupDto groupDto) {
+    public ResponseEntity<GroupDto> createNewGroup(@Valid @RequestBody GroupDto groupDto,
+                                                   Authentication authentication) {
         Group mappedGroup = groupMapper.MapFrom(groupDto);
-        var currentUserEmail = SecurityContextHolder.
-                getContext().getAuthentication().getName();
-        UserEntity currentUser = userService.findByEmail(currentUserEmail);
+        UserEntity currentUser = userService.findByEmail(authentication.getName());
         Group savedGroup = groupService.createGroup(mappedGroup, currentUser);
         GroupDto groupDto1 = groupMapper.MapTo(savedGroup);
         return new ResponseEntity<>(groupDto1, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<GroupDto> updateGroup(
+            @Valid @RequestBody GroupDto groupDto,
+            Authentication authentication, @PathVariable("id") Long id
+
+    ) {
+        Group group = groupMapper.MapFrom(groupDto);
+        UserEntity currentUser = userService.findByEmail(authentication.getName());
+        Group savedGroup = groupService.updateGroupDetails(id, group, currentUser);
+        return new ResponseEntity<>(groupMapper.MapTo(savedGroup), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteGroup(
+            Authentication authentication,
+            @PathVariable("id") long id
+
+    ) {
+        UserEntity currentUser = userService.findByEmail(authentication.getName());
+        groupService.deleteGroup(id, currentUser);
+        return new ResponseEntity<>("Group deleted", HttpStatus.OK);
     }
 }

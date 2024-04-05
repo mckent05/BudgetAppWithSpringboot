@@ -8,6 +8,7 @@ import com.newDemom.BudgetApplication.Service.TransactionService;
 import com.newDemom.BudgetApplication.Service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -36,10 +37,9 @@ public class TransactionController {
     @PostMapping("/transactions")
     public ResponseEntity<TransactionDto> createTransaction(
             @PathVariable("id") long groupId,
-            @RequestBody TransactionDto transactionDto){
-        var currentUserEmail = SecurityContextHolder.
-                getContext().getAuthentication().getName();
-        UserEntity currentUser = userService.findByEmail(currentUserEmail);
+            @RequestBody TransactionDto transactionDto,
+            Authentication authentication){
+        UserEntity currentUser = userService.findByEmail(authentication.getName());
         Transaction transaction = transactionMapper.MapFrom(transactionDto);
         var savedTransaction = transactionService.createTransaction(groupId, transaction,
                 currentUser);
@@ -50,15 +50,15 @@ public class TransactionController {
 
     @GetMapping
     public ResponseEntity<List<TransactionDto>> getGroupTransaction(
-            @PathVariable("id") long groupId
+            @PathVariable("id") long groupId,
+            Authentication authentication
     ){
-        var currentUserEmail = SecurityContextHolder.
-                getContext().getAuthentication().getName();
-        UserEntity currentUser = userService.findByEmail(currentUserEmail);
+        UserEntity currentUser = userService.findByEmail(authentication.getName());
         var getTransactions = transactionService.getGroupTransactions(groupId, currentUser);
         return new ResponseEntity<>(
                 getTransactions.stream().map(transactionMapper::MapTo).collect(Collectors.toList()),
                 HttpStatus.OK
         );
     }
+
 }

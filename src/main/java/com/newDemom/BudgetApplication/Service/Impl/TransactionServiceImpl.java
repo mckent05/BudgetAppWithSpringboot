@@ -30,20 +30,15 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public List<Transaction> getGroupTransactions(long groupId, UserEntity currentUser) {
-        Group getGroup = groupRepository.findById(groupId).orElseThrow(() ->
-                new ResourceNotFoundException(groupId, "id", "Group" ));
-        if (getGroup.getUser().getId() != currentUser.getId()) {
-            throw new BlogAPIException(String.format("No group with id %s for this user", groupId),
-                    HttpStatus.BAD_REQUEST);
-        }
-        return getGroup.getTransactions().stream().collect(Collectors.toList());
+        Group getGroup = findGroup(groupId, currentUser);
+        return getGroup.getTransactions().stream().
+                collect(Collectors.toList());
     }
 
     @Override
     public Transaction createTransaction(long groupId,
                                          Transaction transaction, UserEntity currentUser) {
-        Group getGroup = groupRepository.findById(groupId).orElseThrow(() ->
-                new ResourceNotFoundException(groupId, "id", "Group" ));
+        Group getGroup = findGroup(groupId, currentUser);
         Transaction newTransaction = new Transaction();
         Set<Group> groups = newTransaction.getGroups();
         newTransaction.setUser(currentUser);
@@ -52,8 +47,17 @@ public class TransactionServiceImpl implements TransactionService {
         groups.add(getGroup);
         newTransaction.setGroups(groups);
         transactionRepository.save(newTransaction);
-//        System.out.println(getGroup.getTransactions());
         return newTransaction;
 
+    }
+
+    private Group findGroup(long groupId, UserEntity currentUser) {
+        Group getGroup = groupRepository.findById(groupId).orElseThrow(() ->
+                new ResourceNotFoundException(groupId, "id", "Group"));
+        if (getGroup.getUser().getId() != currentUser.getId()) {
+            throw new BlogAPIException(String.format("No group with id %s for this user", groupId),
+                    HttpStatus.BAD_REQUEST);
+        }
+        return getGroup;
     }
 }

@@ -23,7 +23,6 @@ public class TokenServiceImpl implements TokenService {
     @Override
     public void createToken(String jwt, UserEntity userEntity) {
         Token token = new Token();
-
         token.setToken(jwt);
         token.setUser(userEntity);
         token.setTokenType(TokenType.BEARER);
