@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 
 import static java.util.Arrays.stream;
 
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @Controller
 @RequestMapping("/api/groups")
 public class GroupController {
@@ -39,6 +40,7 @@ public class GroupController {
         this.groupService = groupService;
         this.userService = userService;
     }
+
 
 
     @GetMapping
