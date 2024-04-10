@@ -17,7 +17,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.stream;
@@ -75,13 +77,15 @@ public class GroupController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteGroup(
+    public ResponseEntity<Object> deleteGroup(
             Authentication authentication,
             @PathVariable("id") long id
 
     ) {
         UserEntity currentUser = userService.findByEmail(authentication.getName());
         groupService.deleteGroup(id, currentUser);
-        return new ResponseEntity<>("Group deleted", HttpStatus.OK);
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Group deleted successfully");
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
