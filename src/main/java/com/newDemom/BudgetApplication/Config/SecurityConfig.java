@@ -55,10 +55,6 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests((authorize) ->
-//                        authorize.requestMatchers(HttpMethod.GET, "/api/**").hasAuthority("ROLE_USER")
-//                                .requestMatchers(HttpMethod.POST, "/api/**").hasAuthority("ROLE_ADMIN")
-                                //.requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
-//                                .requestMatchers("/api/auth/**").permitAll()
                                 authorize.requestMatchers("api/auth/**").permitAll()
                                         .anyRequest().authenticated()
 
